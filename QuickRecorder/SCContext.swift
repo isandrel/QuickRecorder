@@ -347,7 +347,7 @@ class SCContext {
             audioEngine.inputNode.removeTap(onBus: 0)
             audioEngine.stop()
             //DispatchQueue.global().async { try? audioEngine.inputNode.setVoiceProcessingEnabled(false) }
-            if ud.bool(forKey: "enableAEC") { try? AECEngine.stopAudioUnit() }
+            if ud.bool(forKey: "enableAEC") && AECEngine.running { try? AECEngine.stopAudioUnit() }
         }
         if streamType != .systemaudio {
             let dispatchGroup = DispatchGroup()
