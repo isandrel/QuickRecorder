@@ -34,6 +34,7 @@ class SCContext {
     static var screenArea: NSRect?
     static let audioEngine = AVAudioEngine()
     static let AECEngine = AECAudioStream(sampleRate: 48000)
+    static var isAECRunning = false
     static var backgroundColor: CGColor = CGColor.black
     static var filePath: String!
     static var filePath1: String!
@@ -347,7 +348,10 @@ class SCContext {
             audioEngine.inputNode.removeTap(onBus: 0)
             audioEngine.stop()
             //DispatchQueue.global().async { try? audioEngine.inputNode.setVoiceProcessingEnabled(false) }
-            if ud.bool(forKey: "enableAEC") && AECEngine.running { try? AECEngine.stopAudioUnit() }
+            if ud.bool(forKey: "enableAEC") && isAECRunning {
+                try? AECEngine.stopAudioUnit()
+                isAECRunning = false
+            }
         }
         if streamType != .systemaudio {
             let dispatchGroup = DispatchGroup()
