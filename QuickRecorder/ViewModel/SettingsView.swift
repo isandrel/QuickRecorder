@@ -106,6 +106,7 @@ struct RecorderView: View {
     @AppStorage("preventSleep")     private var preventSleep: Bool = true
     @AppStorage("showPreview")      private var showPreview: Bool = true
     @AppStorage("hideCCenter")      private var hideCCenter: Bool = false
+    @AppStorage("hideRecordingTime") private var hideRecordingTime: Bool = false
     
     @State private var userColor: Color = Color.black
 
@@ -150,6 +151,8 @@ struct RecorderView: View {
                 SToggle("Highlight the Mouse Cursor", isOn: $highlightMouse, tips: "Not available for \"Single Window Capture\"")
                 SDivider()
                 SToggle("Exclude Files on Desktop", isOn: $hideDesktopFiles, tips: "If enabled, all files on the Desktop will be hidden from the video when recording.")
+                SDivider()
+                SToggle("Stealth Mode (Hide Recording UI)", isOn: $hideRecordingTime, tips: "Completely hide the menu bar recording indicator. Use keyboard shortcut to stop recording.")
             }
         }.onAppear{ userColor = ud.color(forKey: "userColor") ?? Color.black }
     }
@@ -271,6 +274,8 @@ struct HotkeyView: View {
                 SItem(label: "Save Current Frame") { KeyboardShortcuts.Recorder("", name: .saveFrame) }
                 SDivider()
                 SItem(label: "Toggle Screen Magnifier") {KeyboardShortcuts.Recorder("", name: .screenMagnifier) }
+                SDivider()
+                SItem(label: "Toggle Time Display") { KeyboardShortcuts.Recorder("", name: .toggleTimeDisplay) }
             }
         }
     }
@@ -332,6 +337,7 @@ extension KeyboardShortcuts.Name {
     static let pauseResume = Self("pauseResume")
     static let stop = Self("stop")
     static let showPanel = Self("showPanel")
+    static let toggleTimeDisplay = Self("toggleTimeDisplay")
 }
 
 extension AppDelegate {

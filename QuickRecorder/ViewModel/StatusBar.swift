@@ -22,10 +22,15 @@ struct StatusBarItem: View {
     @StateObject private var popoverState = PopoverState.shared
     //@NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage("miniStatusBar") private var miniStatusBar: Bool = false
+    @AppStorage("hideRecordingTime") private var hideRecordingTime: Bool = false
     //@AppStorage("highlightMouse") private var highlightMouse: Bool = false
     private var appDelegate = AppDelegate.shared
     
     var body: some View {
+        // Stealth mode: hide entire UI when recording
+        if SCContext.streamType != nil && hideRecordingTime {
+            EmptyView()
+        } else {
         HStack(spacing: 0) {
             if SCContext.streamType != nil {
                 ZStack {
@@ -88,10 +93,12 @@ struct StatusBarItem: View {
                                     }).buttonStyle(.plain)
                                 }
                             } else {
-                                Text(recordingLength)
-                                    .foregroundStyle(.white)
-                                    .font(.system(size: 15).monospaced())
-                                    .offset(x: 0.5)
+                                if !hideRecordingTime {
+                                    Text(recordingLength)
+                                        .foregroundStyle(.white)
+                                        .font(.system(size: 15).monospaced())
+                                        .offset(x: 0.5)
+                                }
                             }
                         } else {
                             Group {
@@ -123,10 +130,12 @@ struct StatusBarItem: View {
                                             .frame(width: 16, alignment: .center)
                                     }).buttonStyle(.plain)
                                 }
-                                Text(recordingLength)
-                                    .foregroundStyle(.white)
-                                    .font(.system(size: 15).monospaced())
-                                    .offset(x: 0.5)
+                                if !hideRecordingTime {
+                                    Text(recordingLength)
+                                        .foregroundStyle(.white)
+                                        .font(.system(size: 15).monospaced())
+                                        .offset(x: 0.5)
+                                }
                             }
                         }
                     }
@@ -219,11 +228,17 @@ struct StatusBarItem: View {
             hideMousePointer = hovering
             hideScreenMagnifier = hovering
         }
+        }
     }
 }
 
 func updateStatusBar() {
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        // Hide status bar if stealth mode is enabled during recording
+        if SCContext.streamType != nil && ud.bool(forKey: "hideRecordingTime") {
+            statusBarItem.isVisible = false
+            return
+        }
         if SCContext.streamType == nil && !ud.bool(forKey: "showMenubar") {
             statusBarItem.isVisible = false
             return
