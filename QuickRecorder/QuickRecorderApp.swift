@@ -240,7 +240,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, SCStreamDelegate, SCStreamOu
                 "recordHDR": false,
                 "preventSleep": true,
                 "showPreview": isMacOS12 ? false : true,
-                "savedArea": [String: [String: CGFloat]]()
+                "savedArea": [String: [String: CGFloat]](),
+                "hideRecordingTime": false
             ]
         )
         
@@ -317,6 +318,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, SCStreamDelegate, SCStreamOu
         KeyboardShortcuts.onKeyDown(for: .screenMagnifier) { if SCContext.stream != nil { SCContext.isMagnifierEnabled.toggle() }}
         KeyboardShortcuts.onKeyDown(for: .stop) { if SCContext.stream != nil { SCContext.stopRecording() }}
         KeyboardShortcuts.onKeyDown(for: .pauseResume) { if SCContext.stream != nil { SCContext.pauseRecording() }}
+        KeyboardShortcuts.onKeyDown(for: .toggleTimeDisplay) {
+            ud.set(!ud.bool(forKey: "hideRecordingTime"), forKey: "hideRecordingTime")
+            updateStatusBar()
+        }
         KeyboardShortcuts.onKeyDown(for: .startWithAudio) {[self] in
             if SCContext.streamType != nil { return }
             closeAllWindow()
